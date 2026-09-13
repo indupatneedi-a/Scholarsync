@@ -1,0 +1,19 @@
+# Root Netlify configuration for the KnowConnect monorepo.
+# The publishable site lives in netlify_website/; the rest of the repo is the Android app source.
+[build]
+  base = "netlify_website"
+  publish = "netlify_website"
+
+[dev]
+  publish = "netlify_website"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "ALLOWALL"
+    X-Content-Type-Options = "nosniff"
