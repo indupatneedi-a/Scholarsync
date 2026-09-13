@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KnowConnect - Collegiate Peer Learning & AI Matching</title>
+  <meta name="description" content="Collegiate peer learning, AI-powered study matching, notes sharing, and academic guilds." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Firebase App & Auth SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Top Navigation Header -->
+    <header class="navbar">
+      <div class="nav-container">
+        <div class="nav-brand" onclick="navigateTo('dashboard')">
+          <div class="brand-logo">
+            <i data-lucide="infinity"></i>
+          </div>
+          <div class="brand-info">
+            <div class="brand-title-row">
+              <span class="brand-name">KnowConnect</span>
+              <span class="badge badge-cyan">WEB</span>
+            </div>
+            <span class="brand-subtitle">Collegiate Scholar Network</span>
+          </div>
+        </div>
+
+        <!-- Desktop Navigation Links -->
+        <nav class="nav-links">
+          <button class="nav-btn active" data-tab="dashboard" onclick="navigateTo('dashboard')">
+            <i data-lucide="layout-dashboard"></i> <span>Dashboard</span>
+          </button>
+          <button class="nav-btn" data-tab="aimatch" onclick="navigateTo('aimatch')">
+            <i data-lucide="sparkles"></i> <span>AI Match</span>
+          </button>
+          <button class="nav-btn" data-tab="upload" onclick="navigateTo('upload')">
+            <i data-lucide="upload-cloud"></i> <span>Upload</span>
+          </button>
+          <button class="nav-btn" data-tab="requests" onclick="navigateTo('requests')">
+            <i data-lucide="inbox"></i> <span>Requests</span>
+            <span class="count-pill" id="badge-requests">2</span>
+          </button>
+          <button class="nav-btn" data-tab="guilds" onclick="navigateTo('guilds')">
+            <i data-lucide="users"></i> <span>Guilds</span>
+          </button>
+          <button class="nav-btn" data-tab="leaderboard" onclick="navigateTo('leaderboard')">
+            <i data-lucide="trophy"></i> <span>Ranks</span>
+          </button>
+        </nav>
+
+        <!-- Right Header Actions -->
+        <div class="nav-actions">
+          <button class="icon-btn" id="theme-toggle-btn" onclick="toggleTheme()" title="Switch Theme">
+            <i data-lucide="sun" id="theme-icon"></i>
+          </button>
+          <button class="account-btn" onclick="navigateTo('auth')">
+            <i data-lucide="user-check"></i>
+            <span id="nav-user-label">Account</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Dynamic Content Container -->
+    <main class="main-content">
+
+      <!-- SCREEN 1: DASHBOARD -->
+      <section id="screen-dashboard" class="screen-section active">
+        <div class="hero-banner">
+          <div class="banner-content">
+            <div class="banner-badge">
+              <span class="pulse-dot"></span> Active Semester Spring 2026
+            </div>
+            <h1>Welcome to Your Scholar Workspace</h1>
+            <p>Connect with peers in your courses, exchange verified study notes, and master challenging subjects together.</p>
+            <div class="banner-actions">
+              <button class="btn btn-primary" onclick="navigateTo('aimatch')">
+                <i data-lucide="sparkles"></i> Find Study Partner
+              </button>
+              <button class="btn btn-glass" onclick="navigateTo('upload')">
+                <i data-lucide="file-plus"></i> Share Lecture Notes
+              </button>
+            </div>
+          </div>
+          <div class="banner-stats">
+            <div class="stat-card">
+              <span class="stat-val" id="stat-points">1,480</span>
+              <span class="stat-lbl">Scholar Karma</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-val">98%</span>
+              <span class="stat-lbl">Match Accuracy</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-val">12 hrs</span>
+              <span class="stat-lbl">Weekly Peer Study</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="grid-2col">
+          <!-- Active Study Requests -->
+          <div class="glass-card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <i data-lucide="calendar" class="card-icon"></i>
+                <h3>Upcoming Peer Sessions</h3>
+              </div>
+              <button class="text-btn" onclick="navigateTo('requests')">View all</button>
+            </div>
+            <div class="session-list" id="dashboard-sessions">
+              <!-- Dynamically rendered -->
+            </div>
+          </div>
+
+          <!-- Suggested Peers -->
+          <div class="glass-card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <i data-lucide="user-plus" class="card-icon icon-cyan"></i>
+                <h3>Suggested Course Peers</h3>
+              </div>
+              <button class="text-btn" onclick="navigateTo('aimatch')">Find More</button>
+            </div>
+            <div class="peer-list" id="dashboard-peers">
+              <!-- Dynamically rendered -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Uploads & Notes -->
+        <div class="glass-card mt-6">
+          <div class="card-header">
+            <div class="card-title-group">
+              <i data-lucide="book-open" class="card-icon icon-violet"></i>
+              <h3>Community Verified Study Materials</h3>
+            </div>
+            <button class="btn btn-sm btn-primary" onclick="navigateTo('upload')">
+              <i data-lucide="upload"></i> Upload
+            </button>
+          </div>
+          <div class="materials-grid" id="dashboard-materials">
+            <!-- Dynamically rendered -->
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 2: AI MATCH -->
+      <section id="screen-aimatch" class="screen-section">
+        <div class="section-header">
+          <div>
+            <h2><i data-lucide="sparkles" class="icon-cyan"></i> AI Peer Study Matcher</h2>
+            <p>Our algorithm pairs you with students taking the same courses based on study schedule and learning style.</p>
+          </div>
+          <div class="filter-group">
+            <select id="course-filter" onchange="filterAiMatches()">
+              <option value="ALL">All Subjects</option>
+              <option value="CS61B">CS 61B: Data Structures</option>
+              <option value="EECS127">EECS 127: Machine Learning</option>
+              <option value="MATH53">MATH 53: Multivariable Calculus</option>
+              <option value="BIO1A">BIO 1A: General Biology</option>
+            </select>
+          </div>
+        </div>
+        <div class="peers-grid" id="aimatch-results">
+          <!-- Rendered by JS -->
+        </div>
+      </section>
+
+      <!-- SCREEN 3: UPLOAD NOTES -->
+      <section id="screen-upload" class="screen-section">
+        <div class="section-header">
+          <div>
+            <h2><i data-lucide="upload-cloud" class="icon-violet"></i> Share Study Materials</h2>
+            <p>Upload lecture summaries, study guides, and past exam reviews to earn verified karma points.</p>
+          </div>
+        </div>
+        <div class="glass-card upload-container">
+          <form id="upload-form" onsubmit="handleUploadNote(event)">
+            <div class="form-group">
+              <label>Course Title & Code</label>
+              <input type="text" id="note-course" placeholder="e.g. CS 61B - Data Structures & Algorithms" required />
+            </div>
+            <div class="form-group">
+              <label>Material Topic / Title</label>
+              <input type="text" id="note-title" placeholder="e.g. Midterm 2 Comprehensive Summary & Cheat Sheet" required />
+            </div>
+            <div class="form-group">
+              <label>Category</label>
+              <select id="note-category">
+                <option value="Lecture Notes">Lecture Notes</option>
+                <option value="Exam Review">Exam Review</option>
+                <option value="Cheatsheet">Formula Cheatsheet</option>
+                <option value="Problem Set Solutions">Problem Set Solutions</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Summary / Key Takeaways</label>
+              <textarea id="note-description" rows="4" placeholder="Briefly describe what this note covers (e.g. Red-Black Trees, Graph Traversal, Dynamic Programming)..." required></textarea>
+            </div>
+            <div class="upload-dropzone" onclick="document.getElementById('file-input').click()">
+              <i data-lucide="file-up" class="dropzone-icon"></i>
+              <p><strong>Click to choose a file</strong> or drag and drop PDF, Markdown, or DOCX</p>
+              <span class="file-hint">Maximum size: 25 MB. All materials are automatically virus scanned.</span>
+              <input type="file" id="file-input" style="display:none" onchange="handleFileSelect(event)" />
+              <div id="selected-file-name" class="selected-file"></div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block mt-4">
+              <i data-lucide="check"></i> Publish Note to Campus
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- SCREEN 4: REQUESTS -->
+      <section id="screen-requests" class="screen-section">
+        <div class="section-header">
+          <div>
+            <h2><i data-lucide="inbox" class="icon-cyan"></i> Peer Requests & Invitations</h2>
+            <p>Manage pending study invitations and scheduled collaborative review sessions.</p>
+          </div>
+        </div>
+        <div class="glass-card">
+          <div class="requests-list" id="requests-list-container">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 5: GUILDS -->
+      <section id="screen-guilds" class="screen-section">
+        <div class="section-header">
+          <div>
+            <h2><i data-lucide="users" class="icon-violet"></i> Academic Guilds & Circles</h2>
+            <p>Join specialized departmental guilds to collaborate on research, competitions, and homework help.</p>
+          </div>
+        </div>
+        <div class="guilds-grid" id="guilds-container">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+
+      <!-- SCREEN 6: LEADERBOARD -->
+      <section id="screen-leaderboard" class="screen-section">
+        <div class="section-header">
+          <div>
+            <h2><i data-lucide="trophy" class="icon-cyan"></i> Scholar Karma Leaderboard</h2>
+            <p>Top contributors recognized for answering peer questions and publishing top-rated lecture guides.</p>
+          </div>
+        </div>
+        <div class="glass-card">
+          <div class="leaderboard-table" id="leaderboard-container">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 7: FIREBASE AUTH & ACCOUNT -->
+      <section id="screen-auth" class="screen-section">
+        <div class="auth-wrapper">
+          <div class="glass-card auth-card">
+            <div class="auth-header">
+              <div class="brand-logo mb-3">
+                <i data-lucide="shield-check"></i>
+              </div>
+              <h2>Account Authentication</h2>
+              <p>Sign in with Firebase Auth or Google Account to sync your collegiate workspace.</p>
+            </div>
+
+            <!-- Tabs -->
+            <div class="auth-tabs">
+              <button class="auth-tab-btn active" id="tab-btn-signin" onclick="switchAuthTab('signin')">Sign In</button>
+              <button class="auth-tab-btn" id="tab-btn-signup" onclick="switchAuthTab('signup')">Create Account</button>
+              <button class="auth-tab-btn" id="tab-btn-account" onclick="switchAuthTab('account')">Account</button>
+            </div>
+
+            <!-- Status Alert -->
+            <div id="auth-alert" class="alert-box" style="display: none;"></div>
+
+            <!-- Sign In Form -->
+            <form id="form-signin" onsubmit="handleSignIn(event)">
+              <button type="button" class="btn btn-outline btn-block mb-3" onclick="handleGoogleSignIn()">
+                <i data-lucide="globe"></i> Continue with Google Account
+              </button>
+              <div class="divider"><span>OR EMAIL</span></div>
+              <div class="form-group">
+                <label>Collegiate Email</label>
+                <input type="email" id="signin-email" value="alex.rivera@berkeley.edu" required />
+              </div>
+              <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="signin-password" value="ScholarPass123!" required />
+              </div>
+              <div class="form-row-between">
+                <a href="#" class="small-link" onclick="handleForgotPassword()">Forgot Password?</a>
+              </div>
+              <button type="submit" class="btn btn-primary btn-block mt-3">
+                Sign In with Firebase
+              </button>
+            </form>
+
+            <!-- Sign Up Form -->
+            <form id="form-signup" style="display: none;" onsubmit="handleSignUp(event)">
+              <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="signup-name" placeholder="e.g. Jordan Smith" required />
+              </div>
+              <div class="form-group">
+                <label>University Email (.edu preferred)</label>
+                <input type="email" id="signup-email" placeholder="jordan@university.edu" required />
+              </div>
+              <div class="form-group">
+                <label>Create Password (min 6 chars)</label>
+                <input type="password" id="signup-password" minlength="6" placeholder="••••••••" required />
+              </div>
+              <button type="submit" class="btn btn-success btn-block mt-3">
+                Create Scholar Account
+              </button>
+            </form>
+
+            <!-- Account Management View -->
+            <div id="view-account" style="display: none;">
+              <div class="user-meta-card">
+                <div class="user-avatar-large">
+                  <i data-lucide="user"></i>
+                </div>
+                <div class="user-info-text">
+                  <h3 id="profile-display-name">Alex Rivera</h3>
+                  <p id="profile-email">alex.rivera@berkeley.edu</p>
+                  <span class="badge badge-emerald mt-1">Verified Scholar</span>
+                </div>
+              </div>
+              <div class="account-details-list">
+                <div class="detail-row">
+                  <span>Provider</span>
+                  <span class="pill pill-violet" id="profile-provider">Firebase Auth</span>
+                </div>
+                <div class="detail-row">
+                  <span>Status</span>
+                  <span class="text-cyan font-bold">Active & Synced</span>
+                </div>
+                <div class="detail-row">
+                  <span>University</span>
+                  <span>UC Berkeley</span>
+                </div>
+              </div>
+              <div class="auth-actions mt-4">
+                <button class="btn btn-danger-outline btn-block" onclick="handleSignOut()">
+                  <i data-lucide="log-out"></i> Sign Out
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Mobile Bottom Navigation Bar -->
+    <nav class="mobile-bottom-nav">
+      <button class="mobile-nav-btn active" data-tab="dashboard" onclick="navigateTo('dashboard')">
+        <i data-lucide="layout-dashboard"></i>
+        <span>Home</span>
+      </button>
+      <button class="mobile-nav-btn" data-tab="aimatch" onclick="navigateTo('aimatch')">
+        <i data-lucide="sparkles"></i>
+        <span>AI Match</span>
+      </button>
+      <button class="mobile-nav-btn" data-tab="upload" onclick="navigateTo('upload')">
+        <i data-lucide="upload-cloud"></i>
+        <span>Upload</span>
+      </button>
+      <button class="mobile-nav-btn" data-tab="requests" onclick="navigateTo('requests')">
+        <i data-lucide="inbox"></i>
+        <span>Requests</span>
+      </button>
+      <button class="mobile-nav-btn" data-tab="guilds" onclick="navigateTo('guilds')">
+        <i data-lucide="users"></i>
+        <span>Guilds</span>
+      </button>
+    </nav>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+{
+  "name": "KnowConnect",
+  "description": "Premium AI-powered peer learning platform for college and university students with adaptive peer matching, concept explanations, collaborative groups, and reputation system.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
